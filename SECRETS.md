@@ -47,7 +47,7 @@ Description: OIDC Provider name (from OIDC setup)
 ```
 Name: GCP_WIF_SA_EMAIL
 Value: terraform-state-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com
-Description: Service account email for Terraform state management
+Description: Service account email for Terraform state management (match your actual GCP setup)
 ```
 
 **Secret #5: CLOUDFLARE_API_TOKEN**
