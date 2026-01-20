@@ -49,7 +49,7 @@ jobs:
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
-       with:
+        with:
           workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
           service_account: ${{ secrets.GCP_WIF_SA_EMAIL }}
       
