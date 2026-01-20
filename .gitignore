@@ -1,0 +1,10 @@
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.local
+.terraform-version
+.env
+imported_records.tf
+*.auto.tfvars
