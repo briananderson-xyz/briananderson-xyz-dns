@@ -28,10 +28,6 @@ on:
 
 env:
   TERRAFORM_VERSION: '1.5.7'
-  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  GCP_POOL_ID: ${{ secrets.GCP_POOL_ID }}
-  GCP_PROVIDER_ID: ${{ secrets.GCP_PROVIDER_ID }}
-  GCP_WIF_SA_EMAIL: ${{ secrets.GCP_WIF_SA_EMAIL }}
   
 permissions:
   contents: read
@@ -53,9 +49,9 @@ jobs:
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: projects/${{ env.GCP_PROJECT_ID }}/locations/global/workloadIdentityPools/${{ env.GCP_POOL_ID }}/providers/${{ env.GCP_PROVIDER_ID }}
-          service_account: ${{ env.GCP_WIF_SA_EMAIL }}
+       with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_WIF_SA_EMAIL }}
       
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -111,8 +107,8 @@ jobs:
         id: auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/${{ env.GCP_PROJECT_ID }}/locations/global/workloadIdentityPools/${{ env.GCP_POOL_ID }}/providers/${{ env.GCP_PROVIDER_ID }}
-          service_account: ${{ env.GCP_WIF_SA_EMAIL }}
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_WIF_SA_EMAIL }}
       
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
