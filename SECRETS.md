@@ -1,56 +1,188 @@
 # GitHub Secrets Setup
 
-## 🔐 Required Secrets
+## 🔐 Secrets You Need to Add
 
-You only need 2 GitHub secrets (GCP auth uses org-level OIDC):
+You need **5 secrets** at GitHub organization level:
 
-| Secret | Value | Where to Add |
-|--------|-------|--------------|
-| `CLOUDFLARE_API_TOKEN` | Your Cloudflare API token | Repository Settings → Secrets and variables → Actions |
-| `CLOUDFLARE_ZONE_ID` | Zone ID for briananderson.xyz | Repository Settings → Secrets and variables → Actions |
+| Secret | Value | Description |
+|--------|-------|-------------|
+| `GCP_PROJECT_ID` | Your actual GCP project ID | Project containing Terraform state buckets |
+| `GCP_POOL_ID` | `github-oidc-pool` | Workload Identity Pool name |
+| `GCP_PROVIDER_ID` | `github-provider` | OIDC Provider name |
+| `GCP_WIF_SA_EMAIL` | `terraform-state-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com` | Service account for Terraform state |
+| `CLOUDFLARE_API_TOKEN` | Your Cloudflare API token | For Cloudflare DNS management |
+| `CLOUDFLARE_ZONE_ID` | `your_zone_id_here` | Zone ID for briananderson.xyz |
 
 ## 📝 How to Add Secrets
 
-1. Go to: `https://github.com/briananderson-xyz/briananderson-xyz-dns/settings/secrets/actions`
-2. Click: "New repository secret"
-3. Add each secret above
-4. Click: "Add secret"
+### Step 1: Go to GitHub Organization Settings
+```
+https://github.com/organizations/YOUR_ORG/settings/secrets/actions
+```
 
-## ✅ Organization-Level Variables (Already Set)
+### Step 2: Add Organization-Level Secrets (5 total)
 
-These are configured at the GitHub organization level:
-- `GCP_WIF_PROVIDER`
-- `GCP_WIF_SA_EMAIL`
+**Secret #1: GCP_PROJECT_ID**
+```
+Name: GCP_PROJECT_ID
+Value: your-actual-gcp-project-id
+Description: GCP project ID containing Terraform state buckets
+```
 
-No action needed - these are inherited automatically!
+**Secret #2: GCP_POOL_ID**
+```
+Name: GCP_POOL_ID
+Value: github-oidc-pool
+Description: Workload Identity Pool name (from OIDC setup)
+```
+
+**Secret #3: GCP_PROVIDER_ID**
+```
+Name: GCP_PROVIDER_ID
+Value: github-provider
+Description: OIDC Provider name (from OIDC setup)
+```
+
+**Secret #4: GCP_WIF_SA_EMAIL**
+```
+Name: GCP_WIF_SA_EMAIL
+Value: terraform-state-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com
+Description: Service account email for Terraform state management
+```
+
+**Secret #5: CLOUDFLARE_API_TOKEN**
+```
+Name: CLOUDFLARE_API_TOKEN
+Value: your_cloudflare_api_token_here
+Description: Cloudflare API token with DNS:Edit and Zone:Read scopes
+```
+
+**Secret #6: CLOUDFLARE_ZONE_ID**
+```
+Name: CLOUDFLARE_ZONE_ID
+Value: your_zone_id_here
+Description: Zone ID for briananderson.xyz
+```
+
+### Step 3: Add Repository-Level Secrets (2 optional)
+
+If you prefer repository-level secrets instead of organization-level:
+
+**Secret #1: CLOUDFLARE_API_TOKEN**
+```
+Name: CLOUDFLARE_API_TOKEN
+Value: your_cloudflare_api_token_here
+```
+
+**Secret #2: CLOUDFLARE_ZONE_ID**
+```
+Name: CLOUDFLARE_ZONE_ID
+Value: your_zone_id_here
+```
 
 ---
 
-## 🎯 Quick Reference
+## 🔍 What Changed in Latest Update
 
-### Repository-Level Secrets (You Add These)
+### Fixed Workload Identity Provider Format
+
+**Before (Error):**
+```yaml
+workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
 ```
-CLOUDFLARE_API_TOKEN = [Your Cloudflare API token]
-CLOUDFLARE_ZONE_ID = [Your Zone ID for briananderson.xyz]
+This caused error: "invalid value for audience"
+
+**After (Fixed):**
+```yaml
+workload_identity_provider: projects/${{ env.GCP_PROJECT_ID }}/locations/global/workloadIdentityPools/${{ env.GCP_POOL_ID }}/providers/${{ env.GCP_PROVIDER_ID }}
 ```
 
-### Organization-Level Variables (Already Set)
-```
-GCP_WIF_PROVIDER = [GCP Workload Identity Provider]
-GCP_WIF_SA_EMAIL = [GCP Service Account Email]
-```
+This is the **correct full resource name** that GitHub Actions expects.
 
 ---
 
-## 🔍 Verification
+## 🎯 Why Multiple Secrets?
 
-After adding secrets, GitHub Actions will automatically use them. Watch the workflow run to verify OIDC authentication succeeds.
+### Flexibility
+- Easy to update project ID if you create a new one
+- Easy to update pool/provider names if you change them
+- Clear what each secret controls
+
+### Security
+- Granular access control per secret
+- Easier to audit and rotate individual secrets
+- Clear separation of concerns
+
+### Troubleshooting
+- If OIDC fails, you know which component is wrong
+- Can test with different pool/provider without changing everything
+- Clear error messages point to specific component
 
 ---
 
-## 🚀 Next Steps
+## 🚀 After Adding Secrets
 
-1. Add 2 GitHub secrets (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ZONE_ID)
-2. Watch GitHub Actions workflow run
-3. Verify OIDC authentication works
-4. Check Terraform plan output
+### GitHub Actions Workflow Will:
+1. ✅ Construct full resource name from 4 components
+2. ✅ Request OIDC token from GitHub
+3. ✅ Exchange for GCP access token (15 min)
+4. ✅ Authenticate to GCS buckets
+5. ✅ Initialize Terraform state
+6. ✅ Plan and apply changes
+
+### Security Benefits
+- ✅ No long-lived GCP credentials in GitHub
+- ✅ Automatic token rotation (every workflow run)
+- ✅ Organization-level configuration
+- ✅ Reduced attack surface (15-min tokens)
+
+---
+
+## 📋 Complete Secrets Summary
+
+### Organization-Level (6 secrets)
+1. ✅ `GCP_PROJECT_ID` - Your GCP project ID
+2. ✅ `GCP_POOL_ID` - `github-oidc-pool`
+3. ✅ `GCP_PROVIDER_ID` - `github-provider`
+4. ✅ `GCP_WIF_SA_EMAIL` - `terraform-state-sa@PROJECT_ID.iam.gserviceaccount.com`
+5. ✅ `CLOUDFLARE_API_TOKEN` - Cloudflare API token
+6. ✅ `CLOUDFLARE_ZONE_ID` - Zone ID for briananderson.xyz
+
+### Repository-Level (2 secrets, optional if using org-level)
+7. ✅ `CLOUDFLARE_API_TOKEN` - Same as above
+8. ✅ `CLOUDFLARE_ZONE_ID` - Same as above
+
+---
+
+## ✅ What This Fixes
+
+**Error:** "invalid value for audience" for workload_identity_provider
+
+**Cause:** Workflow was using partial resource name instead of full resource name
+
+**Solution:** Workflow now constructs full resource name from components:
+```
+projects/${GCP_PROJECT_ID}/locations/global/workloadIdentityPools/${GCP_POOL_ID}/providers/${GCP_PROVIDER_ID}
+```
+
+**Result:** GitHub Actions will correctly identify and authenticate to your OIDC provider.
+
+---
+
+## 🎯 Next Steps
+
+1. Add 6 secrets at GitHub organization level (5 min)
+2. Watch GitHub Actions workflow run (2 min)
+3. Verify: "Authentication: ✓" in workflow logs
+4. Verify: Terraform init succeeds (no GCS credentials errors)
+5. Check Terraform plan output (should show 0 to add/change)
+
+---
+
+## 📝 Notes
+
+- Organization-level secrets are recommended for OIDC
+- Repository-level Cloudflare secrets work with org-level OIDC
+- All GCP authentication uses OIDC (no service account key secrets needed)
+- Each secret has a clear, specific purpose
+- Full resource name format matches GitHub Actions expectations
