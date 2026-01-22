@@ -1,4 +1,13 @@
-resource "cloudflare_dns_record" "homelab" {
+terraform {
+  required_providers {
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
+  }
+}
+
+resource "cloudflare_record" "homelab" {
   for_each = var.services
 
   zone_id = var.zone_id
