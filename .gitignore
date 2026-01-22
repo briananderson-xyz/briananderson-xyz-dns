@@ -8,3 +8,4 @@
 .env
 imported_records.tf
 *.auto.tfvars
+.env
