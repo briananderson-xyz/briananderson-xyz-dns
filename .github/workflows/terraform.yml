@@ -26,8 +26,7 @@ on:
       - 'terraform.tf'
       - '.github/workflows/terraform.yml'
 
-env:
-  TERRAFORM_VERSION: '1.5.7'
+
   
 permissions:
   contents: read
@@ -56,7 +55,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_version: 1.7.5
       
       - name: Terraform Format
         id: fmt
@@ -113,7 +112,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_version: 1.7.5
       
       - name: Terraform Format
         id: fmt
