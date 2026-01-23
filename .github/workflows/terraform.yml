@@ -114,6 +114,7 @@ jobs:
             })
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        working-directory: ./environments/prod
         run: terraform apply -auto-approve tfplan
         env:
           GOOGLE_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
