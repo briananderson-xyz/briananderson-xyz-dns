@@ -2,10 +2,8 @@
 .terraform.lock.hcl
 *.tfstate
 *.tfstate.backup
-*.tfvars
 *.tfvars.local
+*.auto.tfvars
 .terraform-version
 .env
 imported_records.tf
-*.auto.tfvars
-.env

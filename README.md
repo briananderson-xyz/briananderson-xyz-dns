@@ -20,25 +20,26 @@ Perfect for developer portfolios and infrastructure automation showcases!
 
 ```
 briananderson-xyz-dns/
+├── .env                      # Local secrets (gitignored) ⚠️
+├── .gitignore
+├── .github/workflows/          # GitHub Actions CI/CD
+│   └── terraform.yml
 ├── modules/
-│   ├── dns_web/          # Web DNS records (A, CNAME)
-│   ├── dns_mail/         # Mail DNS records (MX, DKIM)
-│   ├── dns_homelab/      # Homelab services (Plex, NAS)
-│   └── dns_verification/ # Domain verification (TXT)
+│   ├── dns_web/             # Web DNS records (A, CNAME)
+│   ├── dns_mail/            # Mail DNS records (MX, DKIM, SPF)
+│   ├── dns_homelab/         # Homelab services (Plex, NAS)
+│   └── dns_verification/     # Domain verification (TXT)
 ├── environments/
-│   ├── dev/             # Development environment
-│   │   ├── backend.tf   # GCS state bucket (dev)
-│   │   └── terraform.tfvars  # Dev DNS records
-│   └── prod/            # Production environment
-│       ├── backend.tf   # GCS state bucket (prod)
-│       └── terraform.tfvars  # Prod DNS records
-├── .github/workflows/
-│   └── terraform.yml    # CI/CD pipeline
-├── main.tf                    # Root module orchestration
-├── variables.tf               # Global variables
-├── outputs.tf                # Global outputs
-├── data.tf                   # Data sources
-└── provider.tf               # Cloudflare provider
+│   └── prod/               # Production environment (only env)
+│       ├── backend.tf        # GCS state storage
+│       ├── provider.tf      # Cloudflare provider
+│       ├── terraform.tf     # Provider requirements
+│       ├── terraform.tfvars # DNS record config (committed)
+│       ├── main.tf         # Module instantiations
+│       ├── variables.tf     # Variable definitions
+│       ├── SAFETY.md       # ⚠️ Safety checklist (READ THIS)
+│       └── README.md
+└── modules/ (reusable components)
 ```
 
 ---
@@ -106,23 +107,36 @@ Requires 3 GitHub secrets:
 
 See: [SECRETS.md](SECRETS.md)
 
-### 4. Initialize Terraform
+### 4. Create .env File (Local Development)
 
-**Development Environment:**
 ```bash
-cd environments/dev
-terraform init
+# Create .env in repo root (gitignored)
+cat > .env << 'EOF'
+# Cloudflare Provider Authentication (auto-detected)
+CLOUDFLARE_API_TOKEN=your_api_token_here
+
+# Terraform Variables (use TF_VAR_ prefix)
+TF_VAR_cloudflare_zone_id=your_zone_id_here
+TF_VAR_dkim_public_key=your_dkim_key_here
+TF_VAR_google_site_verification=optional_verification_token
+EOF
 ```
 
-**Production Environment:**
+### 5. Initialize Terraform
+
 ```bash
 cd environments/prod
 terraform init
 ```
 
-### 5. Apply Configuration
+### 6. Apply Configuration
 
 ```bash
+# Load environment variables and apply
+set -a
+source ../../.env
+set -a
+
 terraform plan
 terraform apply
 ```
@@ -132,9 +146,10 @@ terraform apply
 ## 🔐 Security
 
 ### Secret Management
-- ✅ No secrets in git repository
-- ✅ All sensitive data in GitHub Secrets
-- ✅ Separate `.tfvars.local` files for local development
+- ✅ No secrets in git repository (.env is gitignored)
+- ✅ All secrets via environment variables
+- ✅ CLOUDFLARE_API_TOKEN auto-detected by provider
+- ✅ Custom variables use TF_VAR_ prefix (Terraform standard)
 - ✅ Sensitive values masked in example files
 
 ### See: [SECRETS.md](SECRETS.md) for details
@@ -147,6 +162,9 @@ terraform apply
 
 ### See: [PORTFOLIO_SECURITY.md](PORTFOLIO_SECURITY.md) for analysis
 
+### ⚠️ IMPORTANT: Read SAFETY.md
+Before making changes, review `environments/prod/SAFETY.md` - this manages production DNS!
+
 ---
 
 ## 📊 Architecture
@@ -155,8 +173,7 @@ terraform apply
 
 | Environment | Purpose | Records Managed | State Storage |
 |-------------|----------|---------------|---------------|
-| **dev** | Web application testing | dev-www, test-app, staging | gs://terraform-state-dev |
-| **prod** | Production services | Web, Mail, Homelab, Verification | gs://terraform-state-prod |
+| **prod** | Production services | 15 DNS records (Web, Mail, Verification) | gs://briananderson-xyz-tf-state/dns/prod/ |
 
 ### Modules
 
@@ -186,9 +203,12 @@ GitHub Actions workflow automatically:
 - Run `terraform apply` (automatic deployment)
 
 ### Secrets Required
-- `CLOUDFLARE_API_TOKEN` - Cloudflare API token
-- `CLOUDFLARE_ZONE_ID` - Zone ID for briananderson.xyz
-- `GOOGLE_APPLICATION_CREDENTIALS` - Base64-encoded GCS credentials
+- `CLOUDFLARE_API_TOKEN` - Cloudflare API token (auto-detected)
+- `TF_VAR_cloudflare_zone_id` - Zone ID for briananderson.xyz
+- `TF_VAR_dkim_public_key` - Gmail DKIM public key
+- `TF_VAR_google_site_verification` - Google site verification (optional)
+
+**Note**: GitHub Actions uses GCS OIDC for backend authentication (no `GOOGLE_APPLICATION_CREDENTIALS` needed)
 
 ---
 
@@ -196,11 +216,14 @@ GitHub Actions workflow automatically:
 
 ### Production Records
 - **Web**: 7 records (admin, fairview, auth, root, www, domainconnect, home)
-- **Mail**: 6 records (5x MX + 1x DKIM)
-- **Homelab**: Ready for Plex
+- **Mail**: 7 records (5x MX + 1x SPF + 1x DKIM)
 - **Verification**: 1 record (Google site verification)
+- **Total**: 15 DNS records
 
-### See: [DNS_IMPORT_SUMMARY.md](DNS_IMPORT_SUMMARY.md) for details
+### Email Authentication
+- ✅ SPF: `v=spf1 include:_spf.google.com ~all`
+- ✅ DKIM: Configured with Gmail public key
+- ✅ MX: 5 Gmail servers configured
 
 ---
 
@@ -226,8 +249,44 @@ web_records = {
 
 # Apply changes
 cd environments/prod
-terraform plan
-terraform apply
+set -a && source ../../.env && set -a
+terraform plan -out=tfplan
+terraform apply tfplan
+```
+
+### Test Changes Safely
+
+**Always test before affecting production:**
+
+```bash
+# Create test record with different name
+cd environments/prod
+vim terraform.tfvars
+
+# Add test record
+web_records = {
+  "test-admin" = {
+    name    = "test-admin"
+    type    = "A"
+    value   = "192.0.2.1"
+    proxied = true
+    ttl     = 1
+  },
+  # ... existing records
+}
+
+# Apply and verify
+set -a && source ../../.env && set -a
+terraform plan -out=tfplan
+terraform apply tfplan
+
+# Verify DNS propagation
+dig test-admin.briananderson.xyz
+
+# Test your application with test-admin.briananderson.xyz
+
+# Remove test record once verified
+# Revert terraform.tfvars change and apply
 ```
 
 ### Add Plex to Homelab
@@ -309,21 +368,21 @@ dig admin.briananderson.xyz
 # Mail records
 dig briananderson.xyz MX
 
-# Verification records
-dig txt briananderson.xyz
+# Email authentication
+dig txt google._domainkey.briananderson.xyz  # DKIM
+dig txt briananderson.xyz                      # SPF
 ```
 
 ### Run Terraform Validation
 
 ```bash
+cd environments/prod
+
 # Format check
 terraform fmt -check
 
 # Syntax validation
 terraform validate
-
-# Linting
-tflint .
 ```
 
 ---
@@ -361,9 +420,11 @@ Perfect for interviews and portfolios - shows you understand:
 ## 🚀 Ready to Showcase?
 
 1. ✅ Review code - All files use placeholders (no secrets!)
-2. ✅ Run `./setup_github_secrets.sh` - Get GitHub secrets values
+2. ✅ Create .env file - Add your Cloudflare credentials
 3. ✅ Add GitHub Secrets - Configure CI/CD pipeline
-4. ✅ Commit and push - Initialize git and push to GitHub
+4. ✅ Commit and push - Push to GitHub (`.env` is gitignored)
 5. ✅ Pin to profile - Show off your automation skills!
 
 **Your public portfolio demonstrating real infrastructure automation!** 🎉
+
+⚠️ **IMPORTANT**: Read `environments/prod/SAFETY.md` before making any changes!

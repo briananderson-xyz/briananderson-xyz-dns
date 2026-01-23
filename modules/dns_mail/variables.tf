@@ -24,3 +24,16 @@ variable "mail_records" {
     }), null)
   })
 }
+
+variable "dkim_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to create DKIM record"
+}
+
+variable "dkim_public_key" {
+  type        = string
+  default     = ""
+  description = "Gmail DKIM public key (after p=)"
+  sensitive   = true
+}

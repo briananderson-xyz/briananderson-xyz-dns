@@ -1,12 +1,6 @@
-variable "cloudflare_api_token" {
-  type        = string
-  description = "Cloudflare API Token with DNS:Edit and Zone:Read scopes"
-  sensitive   = true
-}
-
 variable "cloudflare_zone_id" {
   type        = string
-  description = "Cloudflare Zone ID for briananderson.xyz"
+  description = "Cloudflare Zone ID for briananderson.xyz (set via TF_VAR_cloudflare_zone_id)"
 }
 
 variable "web_records" {
@@ -76,13 +70,16 @@ variable "homelab_services" {
   default = {}
 }
 
-variable "verification_records" {
-  description = "Domain verification TXT records"
-  type = map(object({
-    name    = string
-    value   = string
-    ttl     = optional(number, 3600)
-    comment = optional(string, "Domain verification record")
-  }))
-  default = {}
+variable "google_site_verification" {
+  type        = string
+  description = "Google site verification token (leave empty to skip)"
+  sensitive   = true
+  default     = ""
+}
+
+variable "dkim_public_key" {
+  type        = string
+  description = "Gmail DKIM public key (after p=)"
+  sensitive   = true
+  default     = ""
 }
