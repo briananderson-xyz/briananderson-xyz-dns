@@ -44,7 +44,7 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: terraform init -lock=false
         env:
           GOOGLE_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -57,7 +57,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color -out=tfplan
+        run: terraform plan -no-color -out=tfplan -lock=false
         env:
           GOOGLE_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -67,7 +67,7 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve tfplan -lock=false
         env:
           GOOGLE_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
