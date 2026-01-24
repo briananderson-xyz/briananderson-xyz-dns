@@ -58,12 +58,13 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color -out=tfplan -lock=false
+        run: terraform plan -no-color -out=tfplan -lock=false -refresh=false
         env:
           GOOGLE_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           TF_VAR_dkim_public_key: ${{ secrets.DKIM_PUBLIC_KEY }}
+        timeout-minutes: 30
         continue-on-error: true
 
       - name: Terraform Apply
@@ -74,3 +75,4 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           TF_VAR_dkim_public_key: ${{ secrets.DKIM_PUBLIC_KEY }}
+        timeout-minutes: 30
