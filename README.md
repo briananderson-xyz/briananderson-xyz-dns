@@ -83,11 +83,16 @@ Run the OIDC setup script:
 # Choose "org" level for organization-wide setup
 ```
 
-Only 2 GitHub secrets needed:
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ZONE_ID`
+**GitHub Secrets Required:**
+- `GCP_PROJECT_ID` - Your GCP project ID
+- `GCP_POOL_ID` - Workload Identity Pool name
+- `GCP_PROVIDER_ID` - OIDC Provider name
+- `GCP_WIF_SA_EMAIL` - Service account email
+- `CLOUDFLARE_API_TOKEN` - Cloudflare API token
+- `CLOUDFLARE_ZONE_ID` - Zone ID
+- `DKIM_PUBLIC_KEY` - Gmail DKIM public key (optional)
 
-**No GCP secrets required!** ✅
+**No GCP service account keys required!** ✅
 
 See: [SECRETS.md](SECRETS.md)
 
@@ -203,10 +208,13 @@ GitHub Actions workflow automatically:
 - Run `terraform apply` (automatic deployment)
 
 ### Secrets Required
+- `GCP_PROJECT_ID` - Your GCP project ID
+- `GCP_POOL_ID` - Workload Identity Pool name
+- `GCP_PROVIDER_ID` - OIDC Provider name
+- `GCP_WIF_SA_EMAIL` - Service account email
 - `CLOUDFLARE_API_TOKEN` - Cloudflare API token (auto-detected)
-- `TF_VAR_cloudflare_zone_id` - Zone ID for briananderson.xyz
-- `TF_VAR_dkim_public_key` - Gmail DKIM public key
-- `TF_VAR_google_site_verification` - Google site verification (optional)
+- `CLOUDFLARE_ZONE_ID` - Zone ID for briananderson.xyz
+- `DKIM_PUBLIC_KEY` - Gmail DKIM public key (optional)
 
 **Note**: GitHub Actions uses GCS OIDC for backend authentication (no `GOOGLE_APPLICATION_CREDENTIALS` needed)
 
