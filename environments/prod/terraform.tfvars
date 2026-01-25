@@ -4,7 +4,7 @@ web_records = {
     type    = "CNAME"
     value   = "c.storage.googleapis.com"
     proxied = true
-    ttl     = 300
+    ttl     = 1
     comment = "Development environment"
   },
   "admin" = {
