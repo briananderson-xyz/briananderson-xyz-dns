@@ -85,8 +85,8 @@ Run the OIDC setup script:
 
 **GitHub Secrets Required:**
 - `GCP_PROJECT_ID` - Your GCP project ID
-- `GCP_POOL_ID` - Workload Identity Pool name
-- `GCP_PROVIDER_ID` - OIDC Provider name
+- `GCP_REGION` - Your GCP region
+- `GCP_WIF_PROVIDER` - Full workload identity provider resource name
 - `GCP_WIF_SA_EMAIL` - Service account email
 - `CLOUDFLARE_API_TOKEN` - Cloudflare API token
 - `CLOUDFLARE_ZONE_ID` - Zone ID
@@ -209,8 +209,8 @@ GitHub Actions workflow automatically:
 
 ### Secrets Required
 - `GCP_PROJECT_ID` - Your GCP project ID
-- `GCP_POOL_ID` - Workload Identity Pool name
-- `GCP_PROVIDER_ID` - OIDC Provider name
+- `GCP_REGION` - Your GCP region
+- `GCP_WIF_PROVIDER` - Full workload identity provider resource name
 - `GCP_WIF_SA_EMAIL` - Service account email
 - `CLOUDFLARE_API_TOKEN` - Cloudflare API token (auto-detected)
 - `CLOUDFLARE_ZONE_ID` - Zone ID for briananderson.xyz
