@@ -7,8 +7,8 @@ You need **5 secrets** at GitHub organization level:
 | Secret | Value | Description |
 |--------|-------|-------------|
 | `GCP_PROJECT_ID` | Your actual GCP project ID | Project containing Terraform state buckets |
-| `GCP_POOL_ID` | `github-oidc-pool` | Workload Identity Pool name |
-| `GCP_PROVIDER_ID` | `github-provider` | OIDC Provider name |
+| `GCP_REGION` | Your GCP region (e.g., us-west4) | Region for GCS buckets |
+| `GCP_WIF_PROVIDER` | Full workload identity provider resource name | OIDC provider for GitHub Actions |
 | `GCP_WIF_SA_EMAIL` | `terraform-state-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com` | Service account for Terraform state |
 | `CLOUDFLARE_API_TOKEN` | Your Cloudflare API token | For Cloudflare DNS management |
 | `CLOUDFLARE_ZONE_ID` | `your_zone_id_here` | Zone ID for briananderson.xyz |
@@ -29,18 +29,18 @@ Value: your-actual-gcp-project-id
 Description: GCP project ID containing Terraform state buckets
 ```
 
-**Secret #2: GCP_POOL_ID**
+**Secret #2: GCP_REGION**
 ```
-Name: GCP_POOL_ID
-Value: github-oidc-pool
-Description: Workload Identity Pool name (from OIDC setup)
+Name: GCP_REGION
+Value: your-gcp-region
+Description: GCP region for Terraform state buckets (e.g., us-west4)
 ```
 
-**Secret #3: GCP_PROVIDER_ID**
+**Secret #3: GCP_WIF_PROVIDER**
 ```
-Name: GCP_PROVIDER_ID
-Value: github-provider
-Description: OIDC Provider name (from OIDC setup)
+Name: GCP_WIF_PROVIDER
+Value: projects/YOUR_PROJECT_ID/locations/global/workloadIdentityPools/github-oidc-pool/providers/github-provider
+Description: Full workload identity provider resource name for GitHub Actions OIDC
 ```
 
 **Secret #4: GCP_WIF_SA_EMAIL**
