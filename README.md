@@ -30,7 +30,7 @@ briananderson-xyz-dns/
 │   ├── dns_homelab/         # Homelab services (Plex, NAS)
 │   └── dns_verification/     # Domain verification (TXT)
 ├── environments/
-│   └── prod/               # Production environment (only env)
+│   └── prod/               # Single environment (prod + dev subdomains)
 │       ├── backend.tf        # GCS state storage
 │       ├── provider.tf      # Cloudflare provider
 │       ├── terraform.tf     # Provider requirements
@@ -63,12 +63,9 @@ tar -xzf cf-terraforming_0.11.0_linux_amd64.tar.gz
 sudo mv cf-terraforming /usr/local/bin/
 ```
 
-### 2. Create GCS Buckets (State Storage)
+### 2. Create GCS Bucket (State Storage)
 
 ```bash
-gsutil mb -l us-central1 gs://terraform-state-dev
-gsutil versioning set on gs://terraform-state-dev
-
 gsutil mb -l us-central1 gs://terraform-state-prod
 gsutil versioning set on gs://terraform-state-prod
 ```
@@ -178,7 +175,7 @@ Before making changes, review `environments/prod/SAFETY.md` - this manages produ
 
 | Environment | Purpose | Records Managed | State Storage |
 |-------------|----------|---------------|---------------|
-| **prod** | Production services | 15 DNS records (Web, Mail, Verification) | gs://briananderson-xyz-tf-state/dns/prod/ |
+| **prod** | All DNS records (prod + dev subdomains) | Production + dev DNS records | gs://briananderson-xyz-tf-state/dns/prod/ |
 
 ### Modules
 
@@ -320,34 +317,30 @@ terraform plan
 terraform apply
 ```
 
-### Test in Dev Environment First
+### Test Changes with Dev Subdomain
 
 ```bash
-# Add dev record
-cd environments/dev
+# Add dev record to test changes
+cd environments/prod
 vim terraform.tfvars
 
-# Add test record
+# Add dev subdomain for testing
 web_records = {
-  "test-new-feature" = {
-    name    = "test-new-feature"
+  "dev" = {
+    name    = "dev"
     type    = "CNAME"
     value   = "c.storage.googleapis.com"
     proxied = true
     ttl     = 300  # Fast TTL for testing
-  }
+  },
+  # ... existing records
 }
 
-# Apply and test
+# Apply and test at dev.briananderson.xyz
 terraform plan
 terraform apply
 
-# Once verified, promote to prod
-cd ../prod
-vim terraform.tfvars
-# Add production version
-terraform plan
-terraform apply
+# Once verified, update prod records (www, etc.)
 ```
 
 ---

@@ -1,4 +1,12 @@
 web_records = {
+  "dev" = {
+    name    = "dev"
+    type    = "CNAME"
+    value   = "c.storage.googleapis.com"
+    proxied = true
+    ttl     = 300
+    comment = "Development environment"
+  },
   "admin" = {
     name    = "admin"
     type    = "A"
