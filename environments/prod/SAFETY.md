@@ -65,7 +65,7 @@ CI/CD uses these secrets:
 
 - **15 DNS records** deployed to Cloudflare
 - **Zone:** briananderson.xyz (your_zone_id_here)
-- **State:** gs://briananderson-xyz-tf-state/dns/prod/
+- **State:** gs://your-terraform-state-bucket/dns/prod/
 - **Last applied:** 2026-01-22
 
 ## Records Managed

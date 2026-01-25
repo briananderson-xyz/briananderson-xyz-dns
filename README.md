@@ -89,7 +89,7 @@ Only 2 GitHub secrets needed:
 
 **No GCP secrets required!** ✅
 
-See: [ORGANIZATION_OIDC.md](ORGANIZATION_OIDC.md) and [OIDC_SETUP.md](OIDC_SETUP.md)
+See: [SECRETS.md](SECRETS.md)
 
 ---
 
@@ -349,7 +349,6 @@ terraform apply
 | File | Purpose |
 |-------|---------|
 | [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | Complete implementation guide |
-| [DNS_IMPORT_SUMMARY.md](DNS_IMPORT_SUMMARY.md) | Imported DNS records summary |
 | [existing_records_analysis.md](existing_records_analysis.md) | Detailed records analysis |
 | [SECRETS.md](SECRETS.md) | Secret management guide |
 | [PORTFOLIO_SECURITY.md](PORTFOLIO_SECURITY.md) | Portfolio security analysis |
