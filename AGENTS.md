@@ -31,18 +31,16 @@ This is a public-facing Terraform project managing DNS records for `briananderso
 
 ## Project Structure
 
-- `modules/` — Reusable Terraform modules (dns_web, dns_mail, dns_homelab, dns_verification, api_worker)
-- `environments/` — Environment-specific configs (dev, prod)
+- `modules/` — Reusable Terraform modules (dns_web, dns_mail, dns_homelab, dns_verification, api_worker, zone_settings)
 - `docs/` — Project documentation
-- `.github/workflows/` — CI/CD pipelines
-- Root `.tf` files — Root module orchestration
+- `.github/workflows/` — CI/CD pipeline
+- Root `.tf` files — Terraform configuration (main, variables, outputs, backend, provider)
 
 ## Development Patterns
 
-- Terraform with Cloudflare provider
-- GCS backend for state storage
+- Terraform with Cloudflare provider (v5)
+- GCS backend for remote state storage
 - OIDC authentication for CI/CD (no long-lived keys)
-- Environment separation: dev and prod
 - All DNS record values passed via `terraform.tfvars` (gitignored)
 
 ## File Safety Checklist (before any commit)

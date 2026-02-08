@@ -6,11 +6,11 @@ Modular Terraform project to manage all DNS records for `briananderson.xyz` via 
 
 A **production-grade** Terraform setup featuring:
 - Modular DNS record management
-- Environment separation (dev/prod)
-- Cloudflare provider integration
+- Cloudflare provider integration (v5)
+- Zone settings management (HTTPS enforcement, redirect rules)
 - CI/CD automation with GitHub Actions
-- Secure secret management via OIDC
-- Terraform best practices (validation, modules)
+- Secure secret management via OIDC (no long-lived credentials)
+- GCS remote state storage
 
 ## Project Structure
 
@@ -18,20 +18,19 @@ A **production-grade** Terraform setup featuring:
 briananderson-xyz-dns/
 ├── modules/
 │   ├── dns_web/          # Web DNS records (A, CNAME)
-│   ├── dns_mail/         # Mail DNS records (MX, DKIM)
-│   ├── dns_homelab/      # Homelab services (Plex, NAS)
+│   ├── dns_mail/         # Mail DNS records (MX, DKIM, SPF, DMARC)
+│   ├── dns_homelab/      # Homelab services
 │   ├── dns_verification/ # Domain verification (TXT)
-│   └── api_worker/       # Cloudflare Workers
-├── environments/
-│   ├── dev/              # Development environment
-│   └── prod/             # Production environment
+│   ├── api_worker/       # Cloudflare Workers
+│   └── zone_settings/    # HTTPS, redirects
 ├── docs/                 # Documentation
 ├── .github/workflows/    # CI/CD pipeline
 ├── main.tf               # Root module orchestration
-├── variables.tf          # Global variables
-├── outputs.tf            # Global outputs
-├── data.tf               # Data sources
-└── provider.tf           # Cloudflare provider
+├── variables.tf          # Input variables
+├── outputs.tf            # Outputs
+├── backend.tf            # GCS remote state
+├── provider.tf           # Cloudflare provider
+└── terraform.tf          # Version constraints
 ```
 
 ## Quick Start
@@ -46,38 +45,20 @@ terraform --version
 
 ### 2. Setup Authentication
 
-See [docs/secrets-setup.md](docs/secrets-setup.md) for detailed OIDC setup.
+See [docs/secrets-setup.md](docs/secrets-setup.md) for detailed OIDC and secrets setup.
 
-GitHub secrets needed:
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ZONE_ID`
-- `GCP_PROJECT_ID`
-- `GCP_POOL_ID`
-- `GCP_PROVIDER_ID`
-- `GCP_WIF_SA_EMAIL`
-
-### 3. Initialize & Apply
+### 3. Local Development
 
 ```bash
-# Development
-cd environments/dev
-terraform init && terraform plan && terraform apply
+# Create terraform.tfvars with your credentials (gitignored)
+# See docs/secrets-setup.md for the required variables
 
-# Production
-cd environments/prod
-terraform init && terraform plan && terraform apply
+terraform init
+terraform plan
+terraform apply
 ```
 
-## Architecture
-
-### Environments
-
-| Environment | Purpose | State Storage |
-|-------------|---------|---------------|
-| **dev** | Web application testing | GCS bucket (dev) |
-| **prod** | Production services | GCS bucket (prod) |
-
-### Modules
+## Modules
 
 | Module | Record Types | Purpose |
 |--------|-------------|---------|
@@ -85,7 +66,8 @@ terraform init && terraform plan && terraform apply
 | **dns_mail** | MX, TXT (DKIM, SPF, DMARC) | Email routing and authentication |
 | **dns_homelab** | A, AAAA | Homelab services |
 | **dns_verification** | TXT | Domain verification |
-| **api_worker** | Workers | Cloudflare Workers |
+| **api_worker** | Workers | Cloudflare Workers proxy |
+| **zone_settings** | Zone settings, rulesets | HTTPS enforcement, www redirect |
 
 ## CI/CD Pipeline
 

@@ -1,6 +1,6 @@
 # DNS Records Reference
 
-Quick reference for all DNS records managed by this project. Record values are configured per-environment in `terraform.tfvars` (gitignored).
+Quick reference for all DNS records managed by this project. Record values are configured in `terraform.tfvars` (gitignored).
 
 ## Web Records (`dns_web` module)
 
@@ -27,9 +27,18 @@ Quick reference for all DNS records managed by this project. Record values are c
 
 ## Verification Records (`dns_verification` module)
 
-| Name | Type | Value |
-|------|------|-------|
-| `@` | TXT | (google-site-verification token, in tfvars) |
+| Name | Type | Purpose |
+|------|------|---------|
+| `api` | TXT | Firebase hosting verification |
+| `_acme-challenge.api` | TXT | ACME challenge for API SSL |
+| `_dmarc` | TXT | Cloudflare DMARC reporting |
+
+## Zone Settings (`zone_settings` module)
+
+| Setting | Value | Purpose |
+|---------|-------|---------|
+| Always Use HTTPS | On | Redirect all HTTP to HTTPS |
+| www redirect | 301 | Redirect www.briananderson.xyz to briananderson.xyz |
 
 ## NS Records (not managed by Terraform)
 
@@ -45,4 +54,4 @@ Quick reference for all DNS records managed by this project. Record values are c
 - **TTL = 1** means "auto" in Cloudflare
 - **Proxied = Yes** means traffic routes through Cloudflare (DDoS protection, caching)
 - **Proxied = No** means DNS-only (direct resolution, required for some services)
-- Values marked "(in tfvars)" are configured per-environment and gitignored
+- Values marked "(in tfvars)" are configured locally and gitignored
