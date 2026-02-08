@@ -38,3 +38,12 @@ module "api_worker" {
   chat_function_url      = var.api_worker_config.chat_function_url
   fit_finder_function_url = var.api_worker_config.fit_finder_function_url
 }
+
+module "zone_settings" {
+  source = "./modules/zone_settings"
+
+  zone_id          = var.cloudflare_zone_id
+  domain           = "briananderson.xyz"
+  always_use_https = true
+  www_redirect     = true
+}
