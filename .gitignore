@@ -1,0 +1,50 @@
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.local
+*.auto.tfvars
+tfplan
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+imported_records.tf
+
+# Terraform binaries (should use system-installed version)
+**/terraform
+**/terraform.exe
+
+# Secrets and credentials
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.json.enc
+credentials*.json
+service-account*.json
+
+# OS artifacts
+nul
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# AI agent config (may contain secret references)
+.claude/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
