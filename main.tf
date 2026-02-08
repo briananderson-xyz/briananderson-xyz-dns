@@ -28,12 +28,11 @@ module "dns_verification" {
 
 module "api_worker" {
   source = "./modules/api_worker"
-  count  = var.api_worker_config.enabled ? 1 : 0
 
   account_id              = var.cloudflare_account_id
   zone_id                 = var.cloudflare_zone_id
-  chat_function_url       = var.api_worker_config.chat_function_url
-  fit_finder_function_url = var.api_worker_config.fit_finder_function_url
+  chat_function_url       = local.api_worker.chat_function_url
+  fit_finder_function_url = local.api_worker.fit_finder_function_url
 }
 
 module "zone_settings" {

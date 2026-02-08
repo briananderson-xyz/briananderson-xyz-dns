@@ -39,7 +39,8 @@ This is a public-facing Terraform project managing DNS records for `briananderso
 - Terraform with Cloudflare provider (v5)
 - GCS backend for remote state storage
 - OIDC authentication for CI/CD (no long-lived keys)
-- All DNS record values passed via `terraform.tfvars` (gitignored)
+- DNS record definitions in `records.tf` (committed code — public data)
+- Only secrets (API token, zone/account IDs) in `terraform.tfvars` (gitignored)
 
 ## File Safety Checklist (before any commit)
 

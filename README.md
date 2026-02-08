@@ -8,6 +8,7 @@ A **production-grade** Terraform setup featuring:
 - Modular DNS record management
 - Cloudflare provider integration (v5)
 - Zone settings management (HTTPS enforcement, redirect rules)
+- Cloudflare Workers proxy for Cloud Run functions
 - CI/CD automation with GitHub Actions
 - Secure secret management via OIDC (no long-lived credentials)
 - GCS remote state storage
@@ -21,12 +22,13 @@ briananderson-xyz-dns/
 │   ├── dns_mail/         # Mail DNS records (MX, DKIM, SPF, DMARC)
 │   ├── dns_homelab/      # Homelab services
 │   ├── dns_verification/ # Domain verification (TXT)
-│   ├── api_worker/       # Cloudflare Workers
-│   └── zone_settings/    # HTTPS, redirects
+│   ├── api_worker/       # Cloudflare Workers proxy to Cloud Run
+│   └── zone_settings/    # HTTPS enforcement, www redirect
 ├── docs/                 # Documentation
 ├── .github/workflows/    # CI/CD pipeline
-├── main.tf               # Root module orchestration
-├── variables.tf          # Input variables
+├── main.tf               # Module orchestration
+├── records.tf            # DNS record and service definitions
+├── variables.tf          # Secret variables (API token, zone/account IDs)
 ├── outputs.tf            # Outputs
 ├── backend.tf            # GCS remote state
 ├── provider.tf           # Cloudflare provider
@@ -45,14 +47,19 @@ terraform --version
 
 ### 2. Setup Authentication
 
-See [docs/secrets-setup.md](docs/secrets-setup.md) for detailed OIDC and secrets setup.
+For CI/CD, see [docs/secrets-setup.md](docs/secrets-setup.md) for GitHub Secrets and OIDC setup.
 
-### 3. Local Development
+For local development, create a `terraform.tfvars` file (gitignored) with your credentials:
+
+```hcl
+cloudflare_api_token  = "<your-api-token>"
+cloudflare_zone_id    = "<your-zone-id>"
+cloudflare_account_id = "<your-account-id>"
+```
+
+### 3. Run
 
 ```bash
-# Create terraform.tfvars with your credentials (gitignored)
-# See docs/secrets-setup.md for the required variables
-
 terraform init
 terraform plan
 terraform apply
@@ -60,28 +67,28 @@ terraform apply
 
 ## Modules
 
-| Module | Record Types | Purpose |
-|--------|-------------|---------|
-| **dns_web** | A, CNAME | Websites and web apps |
-| **dns_mail** | MX, TXT (DKIM, SPF, DMARC) | Email routing and authentication |
-| **dns_homelab** | A, AAAA | Homelab services |
-| **dns_verification** | TXT | Domain verification |
-| **api_worker** | Workers | Cloudflare Workers proxy |
-| **zone_settings** | Zone settings, rulesets | HTTPS enforcement, www redirect |
+| Module | Purpose |
+|--------|---------|
+| **dns_web** | Web DNS records (A, CNAME) for sites and apps |
+| **dns_mail** | Email routing (MX, DKIM, SPF, DMARC) via Google Workspace |
+| **dns_homelab** | Homelab service records |
+| **dns_verification** | Domain verification TXT records |
+| **api_worker** | Cloudflare Worker proxying to Cloud Run functions |
+| **zone_settings** | Always Use HTTPS, www-to-root redirect |
 
 ## CI/CD Pipeline
 
 GitHub Actions workflow automatically:
 
-**On Pull Request:** Format check, validate, plan, comment on PR
+**On Pull Request:** Format check (enforced), validate, plan, comment on PR
 
 **On Push to main:** All validation + `terraform apply`
 
 ## Security
 
-- All sensitive values stored in GitHub Secrets
-- OIDC authentication (no long-lived credentials)
-- `.tfvars` files gitignored
+- Secrets (API tokens, zone/account IDs) stored in GitHub Secrets and local `.tfvars` (gitignored)
+- DNS record definitions are in committed code (`records.tf`) — they're public data
+- OIDC authentication to GCP (no long-lived credentials)
 - No secrets in repository history
 
 ## Documentation
@@ -91,19 +98,6 @@ GitHub Actions workflow automatically:
 | [docs/architecture.md](docs/architecture.md) | Architecture, modules, and setup guide |
 | [docs/secrets-setup.md](docs/secrets-setup.md) | GitHub Secrets and OIDC configuration |
 | [docs/dns-records.md](docs/dns-records.md) | DNS records quick reference |
-
-## Testing
-
-```bash
-# Validate DNS records
-dig www.briananderson.xyz
-dig briananderson.xyz MX
-dig txt briananderson.xyz
-
-# Terraform validation
-terraform fmt -check
-terraform validate
-```
 
 ## License
 

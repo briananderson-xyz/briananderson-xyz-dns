@@ -1,6 +1,6 @@
 # DNS Records Reference
 
-Quick reference for all DNS records managed by this project. Record values are configured in `terraform.tfvars` (gitignored).
+All DNS record definitions live in `records.tf` as Terraform locals.
 
 ## Web Records (`dns_web` module)
 
@@ -8,11 +8,12 @@ Quick reference for all DNS records managed by this project. Record values are c
 |-----------|------|--------|---------|-------|
 | `@` | CNAME | c.storage.googleapis.com | Yes | Root domain |
 | `www` | CNAME | c.storage.googleapis.com | Yes | Main website |
-| `admin` | A | (in tfvars) | Yes | Admin panel |
-| `fairview` | A | (in tfvars) | Yes | Fairview site |
+| `dev` | CNAME | c.storage.googleapis.com | Yes | Dev environment |
+| `admin` | A | 192.0.2.1 | Yes | Admin panel |
+| `fairview` | A | 192.0.2.1 | Yes | Fairview site |
 | `auth` | CNAME | ghs.googlehosted.com | Yes | Google Workspace auth |
-| `_domainconnect` | CNAME | Squarespace domain connect | Yes | Squarespace integration |
-| `home` | CNAME | (in tfvars) | No | Homelab DDNS |
+| `_domainconnect` | CNAME | _domainconnect.domains.squarespace.com | Yes | Squarespace integration |
+| `home` | CNAME | your-ddns-service.com | No | Homelab DDNS |
 
 ## Mail Records (`dns_mail` module)
 
@@ -23,7 +24,9 @@ Quick reference for all DNS records managed by this project. Record values are c
 | `@` | MX | alt2.aspmx.l.google.com | 5 |
 | `@` | MX | alt3.aspmx.l.google.com | 10 |
 | `@` | MX | alt4.aspmx.l.google.com | 10 |
-| `google._domainkey` | TXT | (DKIM key, in tfvars) | - |
+| `@` | TXT | v=spf1 include:_spf.google.com ~all | - |
+| `google._domainkey` | TXT | DKIM public key | - |
+| `_dmarc` | TXT | v=DMARC1; p=none; rua=mailto:... | - |
 
 ## Verification Records (`dns_verification` module)
 
@@ -32,6 +35,14 @@ Quick reference for all DNS records managed by this project. Record values are c
 | `api` | TXT | Firebase hosting verification |
 | `_acme-challenge.api` | TXT | ACME challenge for API SSL |
 | `_dmarc` | TXT | Cloudflare DMARC reporting |
+
+## API Worker (`api_worker` module)
+
+| Resource | Purpose |
+|----------|---------|
+| `api` DNS record | CNAME pointing to Cloudflare Workers |
+| Workers script | Proxies requests to Cloud Run functions (chat, fit-finder) |
+| Workers route | Routes `api.briananderson.xyz/*` to the script |
 
 ## Zone Settings (`zone_settings` module)
 
@@ -53,5 +64,4 @@ Quick reference for all DNS records managed by this project. Record values are c
 
 - **TTL = 1** means "auto" in Cloudflare
 - **Proxied = Yes** means traffic routes through Cloudflare (DDoS protection, caching)
-- **Proxied = No** means DNS-only (direct resolution, required for some services)
-- Values marked "(in tfvars)" are configured locally and gitignored
+- **Proxied = No** means DNS-only (direct resolution)

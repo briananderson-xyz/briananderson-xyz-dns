@@ -13,10 +13,10 @@ resource "cloudflare_dns_record" "api" {
   zone_id = var.zone_id
   name    = var.dns_name
   type    = "A"
-  content = "192.0.2.1"
+  content = "199.36.158.100"
   proxied = true
   ttl     = 1
-  comment = "API subdomain — routed to Cloudflare Worker"
+  comment = "API subdomain — Firebase Hosting origin, routed via Cloudflare Worker"
 }
 
 # Worker script that proxies /chat and /fit-finder to Cloud Run

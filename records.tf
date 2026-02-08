@@ -88,6 +88,12 @@ locals {
     }
   }
 
+  # Cloud Run function URLs for API Worker proxy
+  api_worker = {
+    chat_function_url       = "https://chat-jefw7grwra-uc.a.run.app"
+    fit_finder_function_url = "https://fitfinder-jefw7grwra-uc.a.run.app"
+  }
+
   verification_records = {
     "api-hosting" = {
       name    = "api"
