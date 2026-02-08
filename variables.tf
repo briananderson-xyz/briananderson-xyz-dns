@@ -57,22 +57,18 @@ variable "mail_records" {
     mx_servers = list(object({
       priority = number
       value    = string
-      ttl      = optional(number, 1)
     }))
     spf = optional(object({
       name  = string
       value = string
-      ttl   = optional(number, 1)
     }), null)
     dkim = optional(object({
       name  = string
       value = string
-      ttl   = optional(number, 1)
     }), null)
     dmarc = optional(object({
       name  = string
       value = string
-      ttl   = optional(number, 1)
     }), null)
   })
   default = {
