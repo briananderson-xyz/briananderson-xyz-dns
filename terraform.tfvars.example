@@ -1,9 +1,3 @@
 cloudflare_api_token  = "your-cloudflare-api-token"
 cloudflare_zone_id    = "your-cloudflare-zone-id"
 cloudflare_account_id = "your-cloudflare-account-id"
-
-api_worker_config = {
-  enabled                = true
-  chat_function_url      = "https://your-chat-function-url.a.run.app"
-  fit_finder_function_url = "https://your-fit-finder-function-url.a.run.app"
-}

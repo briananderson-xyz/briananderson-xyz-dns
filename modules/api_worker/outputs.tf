@@ -10,5 +10,5 @@ output "route_pattern" {
 
 output "dns_record" {
   description = "API DNS record name"
-  value       = cloudflare_record.api.name
+  value       = cloudflare_dns_record.api.name
 }

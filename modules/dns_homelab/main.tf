@@ -2,12 +2,12 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
   }
 }
 
-resource "cloudflare_record" "homelab" {
+resource "cloudflare_dns_record" "homelab" {
   for_each = var.services
 
   zone_id = var.zone_id
