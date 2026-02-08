@@ -20,7 +20,7 @@ output "verification_records" {
 
 output "api_worker" {
   description = "API Worker details"
-  value       = var.api_worker_config.enabled ? {
+  value = var.api_worker_config.enabled ? {
     worker_name   = module.api_worker[0].worker_name
     route_pattern = module.api_worker[0].route_pattern
     dns_record    = module.api_worker[0].dns_record

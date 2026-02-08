@@ -21,10 +21,10 @@ resource "cloudflare_dns_record" "api" {
 
 # Worker script that proxies /chat and /fit-finder to Cloud Run
 resource "cloudflare_workers_script" "api_proxy" {
-  account_id   = var.account_id
-  script_name  = var.script_name
-  content      = file("${path.module}/worker.js")
-  main_module  = "worker.js"
+  account_id  = var.account_id
+  script_name = var.script_name
+  content     = file("${path.module}/worker.js")
+  main_module = "worker.js"
 
   bindings = [
     {
