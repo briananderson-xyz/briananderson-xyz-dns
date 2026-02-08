@@ -2,12 +2,12 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
   }
 }
 
-resource "cloudflare_record" "mx" {
+resource "cloudflare_dns_record" "mx" {
   for_each = { for idx, mx in var.mail_records.mx_servers : idx => mx }
 
   zone_id  = var.zone_id
@@ -20,7 +20,7 @@ resource "cloudflare_record" "mx" {
   comment  = "MX record for mail delivery"
 }
 
-resource "cloudflare_record" "spf" {
+resource "cloudflare_dns_record" "spf" {
   for_each = var.mail_records.spf != null ? { spf = var.mail_records.spf } : {}
 
   zone_id = var.zone_id
@@ -32,7 +32,7 @@ resource "cloudflare_record" "spf" {
   comment = "SPF record to prevent spam"
 }
 
-resource "cloudflare_record" "dkim" {
+resource "cloudflare_dns_record" "dkim" {
   for_each = var.mail_records.dkim != null ? { dkim = var.mail_records.dkim } : {}
 
   zone_id = var.zone_id
@@ -44,7 +44,7 @@ resource "cloudflare_record" "dkim" {
   comment = "DKIM record for email authentication"
 }
 
-resource "cloudflare_record" "dmarc" {
+resource "cloudflare_dns_record" "dmarc" {
   for_each = var.mail_records.dmarc != null ? { dmarc = var.mail_records.dmarc } : {}
 
   zone_id = var.zone_id
