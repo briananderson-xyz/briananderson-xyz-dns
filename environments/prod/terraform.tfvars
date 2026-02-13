@@ -83,3 +83,18 @@ homelab_public_ip = ""
 homelab_services  = {}
 
 verification_records = {}
+
+tunnel_services = {
+  "affine" = {
+    tunnel_name = "affine"
+    protocol    = "http"
+    local_port  = 3010
+    hostname    = "affine"
+  },
+  "affine-mcp" = {
+    tunnel_name = "affine-mcp"
+    protocol    = "http"
+    local_port  = 3011
+    hostname    = "affine-mcp"
+  }
+}

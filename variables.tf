@@ -9,6 +9,12 @@ variable "cloudflare_zone_id" {
   description = "Cloudflare Zone ID for briananderson.xyz"
 }
 
+variable "cloudflare_account_id" {
+  type        = string
+  description = "Cloudflare Account ID"
+  default     = ""
+}
+
 variable "web_records" {
   description = "Web DNS records configuration"
   type = map(object({
@@ -83,6 +89,18 @@ variable "verification_records" {
     value   = string
     ttl     = optional(number, 3600)
     comment = optional(string, "Domain verification record")
+  }))
+  default = {}
+}
+
+variable "tunnel_services" {
+  description = "Tunnel service configuration"
+  type = map(object({
+    tunnel_name   = string
+    tunnel_secret = optional(string, "")
+    protocol      = optional(string, "http")
+    local_port    = number
+    hostname      = optional(string, "")
   }))
   default = {}
 }

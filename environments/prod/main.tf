@@ -38,3 +38,12 @@ module "dns_verification" {
     }
   }
 }
+
+module "dns_tunnel" {
+  count  = length(var.tunnel_services) > 0 ? 1 : 0
+  source = "../../modules/dns_tunnel"
+
+  zone_id         = var.cloudflare_zone_id
+  account_id      = var.cloudflare_account_id
+  tunnel_services = var.tunnel_services
+}

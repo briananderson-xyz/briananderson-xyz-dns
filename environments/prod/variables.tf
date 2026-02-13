@@ -3,6 +3,18 @@ variable "cloudflare_zone_id" {
   description = "Cloudflare Zone ID for briananderson.xyz (set via TF_VAR_cloudflare_zone_id)"
 }
 
+variable "cloudflare_account_id" {
+  type        = string
+  description = "Cloudflare Account ID (set via TF_VAR_cloudflare_account_id)"
+}
+
+variable "cloudflare_api_token" {
+  type        = string
+  description = "Cloudflare API Token"
+  sensitive   = true
+  default     = ""
+}
+
 variable "web_records" {
   description = "Web DNS records configuration"
   type = map(object({
@@ -82,4 +94,16 @@ variable "dkim_public_key" {
   description = "Gmail DKIM public key (after p=)"
   sensitive   = true
   default     = ""
+}
+
+variable "tunnel_services" {
+  description = "Tunnel service configuration"
+  type = map(object({
+    tunnel_name   = string
+    tunnel_secret = optional(string, "")
+    protocol      = optional(string, "http")
+    local_port    = number
+    hostname      = optional(string, "")
+  }))
+  default = {}
 }
