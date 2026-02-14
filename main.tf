@@ -43,3 +43,11 @@ module "zone_settings" {
   always_use_https = true
   www_redirect     = true
 }
+
+module "dns_tunnel" {
+  source = "./modules/dns_tunnel"
+
+  account_id      = var.cloudflare_account_id
+  zone_id         = var.cloudflare_zone_id
+  tunnel_services = var.tunnel_services
+}

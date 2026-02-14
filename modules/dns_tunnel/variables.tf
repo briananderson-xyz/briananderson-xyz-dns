@@ -1,15 +1,9 @@
-variable "cloudflare_api_token" {
+variable "zone_id" {
   type        = string
-  description = "Cloudflare API Token"
-  sensitive   = true
+  description = "Cloudflare Zone ID"
 }
 
-variable "cloudflare_zone_id" {
-  type        = string
-  description = "Cloudflare Zone ID for briananderson.xyz"
-}
-
-variable "cloudflare_account_id" {
+variable "account_id" {
   type        = string
   description = "Cloudflare Account ID"
 }
