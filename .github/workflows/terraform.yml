@@ -17,7 +17,7 @@ on:
       - '.github/workflows/terraform.yml'
 
 env:
-  TERRAFORM_VERSION: '1.5.7'
+  TERRAFORM_VERSION: '1.11'
 
 concurrency:
   group: terraform-${{ github.ref }}
