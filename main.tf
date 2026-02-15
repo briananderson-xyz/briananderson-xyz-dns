@@ -47,17 +47,27 @@ module "zone_settings" {
 module "dns_tunnel" {
   source = "./modules/dns_tunnel"
 
-  account_id = var.cloudflare_account_id
-  zone_id    = var.cloudflare_zone_id
-  domain     = "briananderson.xyz"
-  tunnel_services = {
+  account_id  = var.cloudflare_account_id
+  zone_id     = var.cloudflare_zone_id
+  domain      = "briananderson.xyz"
+  tunnel_name = "brian-media"
+  services = {
     "affine-mcp" = {
-      tunnel_name = "affine-mcp"
       hostname    = "affine-mcp"
-      service_url = "http://affine_mcp_server:8080"
+      service_url = "http://localhost:3011"
       access = {
         enabled            = true
         service_token_name = "affine-mcp-ai-clients"
+        allowed_emails     = ["brian@briananderson.xyz"]
+        session_duration   = "24h"
+      }
+    }
+    "firecrawl-mcp" = {
+      hostname    = "firecrawl-mcp"
+      service_url = "http://localhost:3000"
+      access = {
+        enabled            = true
+        service_token_name = "firecrawl-mcp-ai-clients"
         allowed_emails     = ["brian@briananderson.xyz"]
         session_duration   = "24h"
       }

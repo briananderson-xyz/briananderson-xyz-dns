@@ -8,58 +8,57 @@ terraform {
 }
 
 # =============================================================================
-# Cloudflare Tunnels
+# Shared Cloudflare Tunnel (single tunnel for all services)
 # =============================================================================
-
-resource "cloudflare_zero_trust_tunnel_cloudflared" "tunnel" {
-  for_each = var.tunnel_services
-
-  account_id    = var.account_id
-  name          = each.value.tunnel_name
-  config_src    = "cloudflare"
-  tunnel_secret = base64encode(random_bytes.tunnel_secret[each.key].hex)
-}
 
 resource "random_bytes" "tunnel_secret" {
-  for_each = var.tunnel_services
-  length   = 32
+  length = 32
+}
+
+resource "cloudflare_zero_trust_tunnel_cloudflared" "tunnel" {
+  account_id    = var.account_id
+  name          = var.tunnel_name
+  config_src    = "cloudflare"
+  tunnel_secret = base64encode(random_bytes.tunnel_secret.hex)
 }
 
 # =============================================================================
-# Tunnel Ingress Configuration
+# Tunnel Ingress Configuration (all services + catch-all 404)
 # =============================================================================
 
 resource "cloudflare_zero_trust_tunnel_cloudflared_config" "config" {
-  for_each = var.tunnel_services
-
   account_id = var.account_id
-  tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.tunnel[each.key].id
+  tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.tunnel.id
 
   config = {
-    ingress = [
-      {
-        hostname = "${each.value.hostname}.${var.domain}"
-        service  = each.value.service_url
-      },
-      {
-        # Catch-all rule (required by Cloudflare)
-        service = "http_status:404"
-      },
-    ]
+    ingress = concat(
+      [
+        for k, v in var.services : {
+          hostname = "${v.hostname}.${var.domain}"
+          service  = v.service_url
+        }
+      ],
+      [
+        {
+          # Catch-all rule (required by Cloudflare)
+          service = "http_status:404"
+        },
+      ]
+    )
   }
 }
 
 # =============================================================================
-# DNS CNAME Records → Tunnel
+# DNS CNAME Records → Tunnel (all services point to same tunnel)
 # =============================================================================
 
 resource "cloudflare_dns_record" "tunnel_cname" {
-  for_each = { for k, v in var.tunnel_services : k => v if v.hostname != "" }
+  for_each = { for k, v in var.services : k => v if v.hostname != "" }
 
   zone_id = var.zone_id
   name    = each.value.hostname
   type    = "CNAME"
-  content = "${cloudflare_zero_trust_tunnel_cloudflared.tunnel[each.key].id}.cfargotunnel.com"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.tunnel.id}.cfargotunnel.com"
   proxied = true
   ttl     = 1
 }
@@ -70,13 +69,18 @@ resource "cloudflare_dns_record" "tunnel_cname" {
 
 locals {
   services_with_token = {
-    for k, v in var.tunnel_services : k => v
+    for k, v in var.services : k => v
     if v.access.enabled && v.access.service_token_name != ""
   }
 
   services_with_access = {
-    for k, v in var.tunnel_services : k => v
+    for k, v in var.services : k => v
     if v.access.enabled
+  }
+
+  services_with_emails = {
+    for k, v in var.services : k => v
+    if v.access.enabled && length(v.access.allowed_emails) > 0
   }
 }
 
@@ -96,7 +100,7 @@ resource "cloudflare_zero_trust_access_application" "app" {
   for_each = local.services_with_access
 
   account_id = var.account_id
-  name       = each.value.tunnel_name
+  name       = each.key
   domain     = "${each.value.hostname}.${var.domain}"
   type       = "self_hosted"
 
@@ -144,18 +148,11 @@ resource "cloudflare_zero_trust_access_policy" "service_token" {
 # Zero Trust Access — Policy: Allow by Email (browser login for humans)
 # =============================================================================
 
-locals {
-  services_with_emails = {
-    for k, v in var.tunnel_services : k => v
-    if v.access.enabled && length(v.access.allowed_emails) > 0
-  }
-}
-
 resource "cloudflare_zero_trust_access_policy" "email" {
   for_each = local.services_with_emails
 
   account_id = var.account_id
-  name       = "Allow emails for ${each.value.tunnel_name}"
+  name       = "Allow emails for ${each.key}"
   decision   = "allow"
 
   include = [

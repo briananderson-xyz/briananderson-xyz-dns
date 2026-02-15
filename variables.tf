@@ -28,19 +28,3 @@ variable "mcp_gateway_routes" {
   description = "MCP Gateway routes: path prefix → backend"
   default     = {}
 }
-
-variable "tunnel_services" {
-  description = "Services to expose via Cloudflare Tunnel with Zero Trust Access"
-  type = map(object({
-    tunnel_name = string
-    hostname    = string
-    service_url = string
-    access = optional(object({
-      enabled            = optional(bool, true)
-      service_token_name = optional(string, "")
-      allowed_emails     = optional(list(string), [])
-      session_duration   = optional(string, "24h")
-    }), { enabled = true })
-  }))
-  default = {}
-}
