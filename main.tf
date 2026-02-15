@@ -49,5 +49,17 @@ module "dns_tunnel" {
 
   account_id      = var.cloudflare_account_id
   zone_id         = var.cloudflare_zone_id
+  domain          = "briananderson.xyz"
   tunnel_services = var.tunnel_services
+}
+
+module "mcp_gateway" {
+  source = "./modules/mcp_gateway"
+
+  account_id   = var.cloudflare_account_id
+  zone_id      = var.cloudflare_zone_id
+  hostname     = "mcp"
+  domain       = "briananderson.xyz"
+  bearer_token = var.mcp_gateway_bearer_token
+  routes       = var.mcp_gateway_routes
 }
