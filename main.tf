@@ -43,3 +43,35 @@ module "zone_settings" {
   always_use_https = true
   www_redirect     = true
 }
+
+module "dns_tunnel" {
+  source = "./modules/dns_tunnel"
+
+  account_id = var.cloudflare_account_id
+  zone_id    = var.cloudflare_zone_id
+  domain     = "briananderson.xyz"
+  tunnel_services = {
+    "affine-mcp" = {
+      tunnel_name = "affine-mcp"
+      hostname    = "affine-mcp"
+      service_url = "http://affine_mcp_server:8080"
+      access = {
+        enabled            = true
+        service_token_name = "affine-mcp-ai-clients"
+        allowed_emails     = ["brian@briananderson.xyz"]
+        session_duration   = "24h"
+      }
+    }
+  }
+}
+
+module "mcp_gateway" {
+  source = "./modules/mcp_gateway"
+
+  account_id   = var.cloudflare_account_id
+  zone_id      = var.cloudflare_zone_id
+  hostname     = "mcp"
+  domain       = "briananderson.xyz"
+  bearer_token = var.mcp_gateway_bearer_token
+  routes       = var.mcp_gateway_routes
+}

@@ -26,3 +26,33 @@ output "api_worker" {
     dns_record    = module.api_worker.dns_record
   }
 }
+
+output "tunnel_ids" {
+  description = "Tunnel UUIDs"
+  value       = module.dns_tunnel.tunnel_ids
+}
+
+output "tunnel_cnames" {
+  description = "Tunnel DNS records"
+  value       = module.dns_tunnel.tunnel_cname_records
+}
+
+output "tunnel_info" {
+  description = "Tunnel IDs and status (get install token from CF Zero Trust dashboard)"
+  value       = module.dns_tunnel.tunnel_secrets
+}
+
+output "mcp_gateway" {
+  description = "MCP Gateway details"
+  value = {
+    url           = module.mcp_gateway.gateway_url
+    worker_name   = module.mcp_gateway.worker_name
+    route_pattern = module.mcp_gateway.route_pattern
+  }
+}
+
+output "service_token_credentials" {
+  description = "Service token credentials for Access (CF-Access-Client-Id / CF-Access-Client-Secret)"
+  value       = module.dns_tunnel.service_token_credentials
+  sensitive   = true
+}

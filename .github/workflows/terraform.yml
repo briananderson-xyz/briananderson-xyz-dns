@@ -17,7 +17,11 @@ on:
       - '.github/workflows/terraform.yml'
 
 env:
-  TERRAFORM_VERSION: '1.5.7'
+  TERRAFORM_VERSION: '1.11'
+
+concurrency:
+  group: terraform-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -61,13 +65,13 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color -out=tfplan
+        run: terraform plan -no-color -input=false -out=tfplan -lock=false
         env:
           GOOGLE_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        continue-on-error: true
+          TF_VAR_mcp_gateway_bearer_token: ${{ secrets.MCP_GATEWAY_TOKEN }}
 
       - name: Comment PR with Plan
         if: github.event_name == 'pull_request'
@@ -96,9 +100,10 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve -lock=false tfplan
         env:
           GOOGLE_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_mcp_gateway_bearer_token: ${{ secrets.MCP_GATEWAY_TOKEN }}

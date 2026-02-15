@@ -29,18 +29,26 @@ This is a public-facing Terraform project managing DNS records for `briananderso
 
 ## Project Structure
 
-- `modules/` — Reusable Terraform modules (dns_web, dns_mail, dns_homelab, dns_verification, api_worker, zone_settings)
+- `modules/` — Reusable Terraform modules (dns_web, dns_mail, dns_homelab, dns_verification, api_worker, zone_settings, dns_tunnel, mcp_gateway)
 - `docs/` — Project documentation
-- `.github/workflows/` — CI/CD pipeline
-- Root `.tf` files — Terraform configuration (main, variables, outputs, backend, provider)
+- `.github/workflows/` — CI/CD pipeline (single workflow: `terraform.yml`)
+- Root `.tf` files — Terraform configuration (main, variables, outputs, backend, provider, records, terraform)
 
 ## Development Patterns
 
-- Terraform with Cloudflare provider (v5)
-- GCS backend for remote state storage
+- Terraform 1.11+ with Cloudflare provider (v5)
+- GCS backend for remote state storage (no native lock file — uses GCS object locking)
 - OIDC authentication for CI/CD (no long-lived keys)
 - DNS record definitions in `records.tf` (committed code — public data)
-- Only secrets (API token, zone/account IDs) in `terraform.tfvars` (gitignored)
+- Only secrets (API token, zone/account IDs, MCP gateway token) in `terraform.tfvars` (gitignored)
+
+## CI/CD Nuances
+
+- **Variable ↔ Secret mapping**: Every required Terraform variable without a default MUST have a corresponding `TF_VAR_*` env var in the workflow, backed by a GitHub Secret. Current secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID`, `CLOUDFLARE_ACCOUNT_ID`, `MCP_GATEWAY_TOKEN`
+- **Always use `-input=false`** on `terraform plan` in CI — prevents the plan from hanging silently if a variable is missing
+- **Concurrency control**: The workflow uses a `concurrency` group per branch with `cancel-in-progress: true` to prevent parallel Terraform runs from causing state lock conflicts
+- **State lock issues**: If a CI run is cancelled mid-plan/apply, it can leave a stale state lock on GCS. Fix with `terraform force-unlock <LOCK_ID>` locally
+- **Terraform version**: CI version must match what the backend config requires. The `use_lockfile` GCS option requires TF 1.10+; currently removed from `backend.tf` since GCS doesn't fully support it yet
 
 ## File Safety Checklist (before any commit)
 
