@@ -30,9 +30,9 @@ resource "cloudflare_workers_script" "mcp_gateway" {
 }
 
 resource "cloudflare_workers_route" "mcp_gateway" {
-  zone_id  = var.zone_id
-  pattern  = "${var.hostname}.${var.domain}/*"
-  script   = cloudflare_workers_script.mcp_gateway.script_name
+  zone_id = var.zone_id
+  pattern = "${var.hostname}.${var.domain}/*"
+  script  = cloudflare_workers_script.mcp_gateway.script_name
 
   depends_on = [cloudflare_workers_script.mcp_gateway]
 }

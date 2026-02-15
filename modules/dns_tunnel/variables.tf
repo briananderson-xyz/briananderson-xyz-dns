@@ -18,11 +18,11 @@ variable "tunnel_services" {
   description = "Services to expose via Cloudflare Tunnel with Zero Trust Access"
   type = map(object({
     tunnel_name = string
-    hostname    = string              # subdomain (e.g. 'affine-mcp' → affine-mcp.briananderson.xyz)
-    service_url = string              # local service URL (e.g. 'http://localhost:3011')
+    hostname    = string # subdomain (e.g. 'affine-mcp' → affine-mcp.briananderson.xyz)
+    service_url = string # local service URL (e.g. 'http://localhost:3011')
     access = optional(object({
       enabled            = optional(bool, true)
-      service_token_name = optional(string, "")  # creates a service token for machine auth
+      service_token_name = optional(string, "") # creates a service token for machine auth
       allowed_emails     = optional(list(string), [])
       session_duration   = optional(string, "24h")
     }), { enabled = true })

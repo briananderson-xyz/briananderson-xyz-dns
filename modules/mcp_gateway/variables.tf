@@ -27,7 +27,7 @@ variable "bearer_token" {
 }
 
 variable "routes" {
-  type        = map(object({
+  type = map(object({
     url     = string
     headers = optional(map(string), {})
   }))
