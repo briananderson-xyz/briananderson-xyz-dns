@@ -8,6 +8,28 @@ terraform {
 }
 
 # =============================================================================
+# State migration: one-tunnel-per-service → single shared tunnel
+# These moved blocks prevent Terraform from destroying/recreating the existing
+# affine-mcp tunnel when migrating to the shared tunnel architecture.
+# Safe to remove after the first successful apply.
+# =============================================================================
+
+moved {
+  from = cloudflare_zero_trust_tunnel_cloudflared.tunnel["affine-mcp"]
+  to   = cloudflare_zero_trust_tunnel_cloudflared.tunnel
+}
+
+moved {
+  from = random_bytes.tunnel_secret["affine-mcp"]
+  to   = random_bytes.tunnel_secret
+}
+
+moved {
+  from = cloudflare_zero_trust_tunnel_cloudflared_config.config["affine-mcp"]
+  to   = cloudflare_zero_trust_tunnel_cloudflared_config.config
+}
+
+# =============================================================================
 # Shared Cloudflare Tunnel (single tunnel for all services)
 # =============================================================================
 
