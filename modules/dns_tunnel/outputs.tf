@@ -1,11 +1,16 @@
-output "tunnel_ids" {
-  description = "Map of service key to tunnel UUID"
-  value       = { for k, v in cloudflare_zero_trust_tunnel_cloudflared.tunnel : k => v.id }
+output "tunnel_id" {
+  description = "Shared tunnel UUID"
+  value       = cloudflare_zero_trust_tunnel_cloudflared.tunnel.id
 }
 
-output "tunnel_secrets" {
-  description = "Tunnel secrets (retrieve install token from Zero Trust dashboard → Networks → Tunnels → Install connector)"
-  value       = { for k, v in cloudflare_zero_trust_tunnel_cloudflared.tunnel : k => { id = v.id, status = v.status } }
+output "tunnel_token" {
+  description = "Tunnel token for cloudflared connector (run: cloudflared tunnel run --token <token>)"
+  value = base64encode(jsonencode({
+    a = var.account_id
+    t = cloudflare_zero_trust_tunnel_cloudflared.tunnel.id
+    s = base64encode(random_bytes.tunnel_secret.hex)
+  }))
+  sensitive = true
 }
 
 output "service_token_credentials" {

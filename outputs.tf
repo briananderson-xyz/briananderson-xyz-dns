@@ -27,19 +27,20 @@ output "api_worker" {
   }
 }
 
-output "tunnel_ids" {
-  description = "Tunnel UUIDs"
-  value       = module.dns_tunnel.tunnel_ids
+output "tunnel_id" {
+  description = "Shared tunnel UUID"
+  value       = module.dns_tunnel.tunnel_id
+}
+
+output "tunnel_token" {
+  description = "Tunnel token for cloudflared connector"
+  value       = module.dns_tunnel.tunnel_token
+  sensitive   = true
 }
 
 output "tunnel_cnames" {
   description = "Tunnel DNS records"
   value       = module.dns_tunnel.tunnel_cname_records
-}
-
-output "tunnel_info" {
-  description = "Tunnel IDs and status (get install token from CF Zero Trust dashboard)"
-  value       = module.dns_tunnel.tunnel_secrets
 }
 
 output "mcp_gateway" {
