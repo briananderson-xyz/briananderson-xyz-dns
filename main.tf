@@ -35,6 +35,18 @@ module "api_worker" {
   fit_finder_function_url = local.api_worker.fit_finder_function_url
 }
 
+module "api_worker_dev" {
+  source = "./modules/api_worker"
+
+  account_id              = var.cloudflare_account_id
+  zone_id                 = var.cloudflare_zone_id
+  chat_function_url       = local.api_worker_dev.chat_function_url
+  fit_finder_function_url = local.api_worker_dev.fit_finder_function_url
+  script_name             = "api-proxy-dev"
+  route_pattern           = "api-dev.briananderson.xyz/*"
+  dns_name                = "api-dev.briananderson.xyz"
+}
+
 module "zone_settings" {
   source = "./modules/zone_settings"
 
