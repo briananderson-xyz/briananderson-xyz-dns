@@ -89,12 +89,10 @@ locals {
   }
 
   # Cloud Run function URLs for API Worker proxy
-  # TODO: Update these URLs after first Cloud Run deployment in briananderson-xyz-468620
-  # The deploy-functions job in the main repo will print the new URLs.
-  # After terraform apply + first deploy, replace the OLD values below.
+  # Migrated from briananderson-xyz-ai to briananderson-xyz-468620
   api_worker = {
-    chat_function_url       = "https://chat-jefw7grwra-uc.a.run.app"       # OLD — replace after Cloud Run migration
-    fit_finder_function_url = "https://fitfinder-jefw7grwra-uc.a.run.app"   # OLD — replace after Cloud Run migration
+    chat_function_url       = "https://chat-769547710921.us-central1.run.app"
+    fit_finder_function_url = "https://fitfinder-769547710921.us-central1.run.app"
   }
 
   verification_records = {
