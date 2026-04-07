@@ -95,6 +95,11 @@ locals {
     fit_finder_function_url = "https://fitfinder-769547710921.us-central1.run.app"
   }
 
+  api_worker_dev = {
+    chat_function_url       = "https://chat-dev-769547710921.us-central1.run.app"
+    fit_finder_function_url = "https://fitfinder-dev-769547710921.us-central1.run.app"
+  }
+
   verification_records = {
     "api-hosting" = {
       name    = "api"

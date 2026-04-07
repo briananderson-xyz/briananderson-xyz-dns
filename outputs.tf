@@ -27,6 +27,15 @@ output "api_worker" {
   }
 }
 
+output "api_worker_dev" {
+  description = "Dev API Worker details"
+  value = {
+    worker_name   = module.api_worker_dev.worker_name
+    route_pattern = module.api_worker_dev.route_pattern
+    dns_record    = module.api_worker_dev.dns_record
+  }
+}
+
 output "tunnel_id" {
   description = "Shared tunnel UUID"
   value       = module.dns_tunnel.tunnel_id
