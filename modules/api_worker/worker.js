@@ -38,7 +38,7 @@ export default {
       });
     }
 
-    // Forward request to Cloud Run
+    // Forward request to Cloud Run service root
     const response = await fetch(target, {
       method: request.method,
       headers: { "Content-Type": request.headers.get("Content-Type") || "application/json" },
