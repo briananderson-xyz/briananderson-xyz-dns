@@ -89,9 +89,10 @@ locals {
   }
 
   # Cloud Run function URLs for API Worker proxy
+  # Migrated from briananderson-xyz-ai to briananderson-xyz-468620
   api_worker = {
-    chat_function_url       = "https://chat-jefw7grwra-uc.a.run.app"
-    fit_finder_function_url = "https://fitfinder-jefw7grwra-uc.a.run.app"
+    chat_function_url       = "https://chat-769547710921.us-central1.run.app"
+    fit_finder_function_url = "https://fitfinder-769547710921.us-central1.run.app"
   }
 
   verification_records = {
