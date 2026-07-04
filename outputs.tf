@@ -66,3 +66,13 @@ output "service_token_credentials" {
   value       = module.dns_tunnel.service_token_credentials
   sensitive   = true
 }
+
+output "api_state_kv_namespace_id" {
+  description = "KV namespace id for the prod api worker (rate limit + AI kill switch)"
+  value       = module.api_worker.kv_namespace_id
+}
+
+output "api_state_kv_namespace_id_dev" {
+  description = "KV namespace id for the dev api worker (rate limit + AI kill switch)"
+  value       = module.api_worker_dev.kv_namespace_id
+}
