@@ -32,7 +32,7 @@ export default {
     const routes = {
       "/chat": env.CHAT_URL,
       "/fit-finder": env.FIT_FINDER_URL,
-      "/mcp": `${chatBase}/mcp`,
+      "/mcp": chatBase + "/mcp",
     };
 
     const target = routes[url.pathname];
