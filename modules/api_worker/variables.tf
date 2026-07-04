@@ -35,3 +35,15 @@ variable "dns_name" {
   default     = "api.briananderson.xyz"
   description = "DNS record name for the API subdomain"
 }
+
+variable "rate_limit" {
+  type        = number
+  default     = 15
+  description = "Max requests per IP per window on the proxied AI endpoints"
+}
+
+variable "rate_window_seconds" {
+  type        = number
+  default     = 600
+  description = "Rate-limit window length in seconds (default 10 minutes)"
+}
