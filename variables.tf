@@ -20,6 +20,28 @@ variable "mcp_gateway_bearer_token" {
   sensitive   = true
 }
 
+variable "origin_verify_token_prod" {
+  type        = string
+  description = "Shared secret injected by the prod API Worker and required by prod Cloud Run"
+  sensitive   = true
+
+  validation {
+    condition     = length(trimspace(var.origin_verify_token_prod)) >= 32
+    error_message = "origin_verify_token_prod must be at least 32 characters."
+  }
+}
+
+variable "origin_verify_token_dev" {
+  type        = string
+  description = "Shared secret injected by the dev API Worker and required by dev Cloud Run"
+  sensitive   = true
+
+  validation {
+    condition     = length(trimspace(var.origin_verify_token_dev)) >= 32
+    error_message = "origin_verify_token_dev must be at least 32 characters."
+  }
+}
+
 variable "mcp_gateway_routes" {
   type = map(object({
     url     = string

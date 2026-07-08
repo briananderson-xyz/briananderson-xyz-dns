@@ -42,11 +42,11 @@ This is a public-facing Terraform project managing DNS records for `briananderso
 - GCS backend for remote state storage (no native lock file — uses GCS object locking)
 - OIDC authentication for CI/CD (no long-lived keys)
 - DNS record definitions in `records.tf` (committed code — public data)
-- Only secrets (API token, zone/account IDs, MCP gateway token) in `terraform.tfvars` (gitignored)
+- Only secrets (API token, zone/account IDs, MCP gateway token, origin verify token) in `terraform.tfvars` (gitignored)
 
 ## CI/CD Nuances
 
-- **Variable ↔ Secret mapping**: Every required Terraform variable without a default MUST have a corresponding `TF_VAR_*` env var in the workflow, backed by a GitHub Secret. Current secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID`, `CLOUDFLARE_ACCOUNT_ID`, `MCP_GATEWAY_TOKEN`
+- **Variable ↔ Secret mapping**: Every required Terraform variable without a default MUST have a corresponding `TF_VAR_*` env var in the workflow, backed by a GitHub Secret. Current secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID`, `CLOUDFLARE_ACCOUNT_ID`, `MCP_GATEWAY_TOKEN`, `ORIGIN_VERIFY_TOKEN_PROD`, `ORIGIN_VERIFY_TOKEN_DEV`
 - **Always use `-input=false`** on `terraform plan` in CI — prevents the plan from hanging silently if a variable is missing
 - **Concurrency control**: The workflow uses a `concurrency` group per branch with `cancel-in-progress: true` to prevent parallel Terraform runs from causing state lock conflicts
 - **State lock issues**: If a CI run is cancelled mid-plan/apply, it can leave a stale state lock on GCS. Fix with `terraform force-unlock <LOCK_ID>` locally

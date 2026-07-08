@@ -2,7 +2,7 @@
 
 ## GitHub Secrets
 
-You need **5 secrets** in your GitHub repository:
+You need **8 secrets** in your GitHub repository:
 
 | Secret | Description |
 |--------|-------------|
@@ -11,6 +11,9 @@ You need **5 secrets** in your GitHub repository:
 | `CLOUDFLARE_API_TOKEN` | Cloudflare API token |
 | `CLOUDFLARE_ZONE_ID` | Cloudflare zone ID for briananderson.xyz |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
+| `MCP_GATEWAY_TOKEN` | Bearer token for the MCP gateway Worker |
+| `ORIGIN_VERIFY_TOKEN_PROD` | Prod API Worker to Cloud Run origin verification token |
+| `ORIGIN_VERIFY_TOKEN_DEV` | Dev API Worker to Cloud Run origin verification token |
 
 ## Cloudflare API Token Scopes
 
@@ -31,9 +34,12 @@ Create a `terraform.tfvars` file in the project root (gitignored) with your cred
 cloudflare_api_token  = "<your-api-token>"
 cloudflare_zone_id    = "<your-zone-id>"
 cloudflare_account_id = "<your-account-id>"
+mcp_gateway_bearer_token = "<your-mcp-gateway-token>"
+origin_verify_token_prod = "<your-prod-origin-verify-token>"
+origin_verify_token_dev  = "<your-dev-origin-verify-token>"
 ```
 
-That's it — DNS record definitions live in `records.tf` (committed), so the tfvars only needs these three values.
+That's it — DNS record definitions live in `records.tf` (committed), so the tfvars only needs credentials and sensitive tokens.
 
 ## Workload Identity Federation (OIDC)
 

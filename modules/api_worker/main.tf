@@ -56,6 +56,11 @@ resource "cloudflare_workers_script" "api_proxy" {
       text = tostring(var.rate_window_seconds)
     },
     {
+      name = "ORIGIN_VERIFY_TOKEN"
+      type = "secret_text"
+      text = var.origin_verify_token
+    },
+    {
       name         = "API_STATE"
       type         = "kv_namespace"
       namespace_id = cloudflare_workers_kv_namespace.api_state.id

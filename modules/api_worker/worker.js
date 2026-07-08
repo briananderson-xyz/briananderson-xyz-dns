@@ -99,6 +99,7 @@ export default {
     // for /chat and /fit-finder.
     const forwardHeaders = {
       "Content-Type": request.headers.get("Content-Type") || "application/json",
+      "X-Origin-Verify": env.ORIGIN_VERIFY_TOKEN,
     };
     const accept = request.headers.get("Accept");
     if (accept) forwardHeaders["Accept"] = accept;

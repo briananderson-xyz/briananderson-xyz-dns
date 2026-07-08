@@ -60,6 +60,6 @@ No service account keys are stored anywhere. See [secrets-setup.md](secrets-setu
 
 1. Install Terraform (>= 1.5.0)
 2. Create a GCS bucket for state storage (see [secrets-setup.md](secrets-setup.md))
-3. Configure GitHub Secrets (5 secrets required)
+3. Configure GitHub Secrets (8 secrets required)
 4. Create local `terraform.tfvars` with credentials
 5. `terraform init && terraform plan && terraform apply`

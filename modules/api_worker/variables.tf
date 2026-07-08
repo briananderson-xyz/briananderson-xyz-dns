@@ -24,6 +24,17 @@ variable "fit_finder_function_url" {
   description = "Cloud Run URL for the fit-finder function"
 }
 
+variable "origin_verify_token" {
+  type        = string
+  description = "Shared secret sent to Cloud Run as X-Origin-Verify"
+  sensitive   = true
+
+  validation {
+    condition     = length(trimspace(var.origin_verify_token)) >= 32
+    error_message = "origin_verify_token must be at least 32 characters."
+  }
+}
+
 variable "route_pattern" {
   type        = string
   default     = "api.briananderson.xyz/*"

@@ -33,6 +33,7 @@ module "api_worker" {
   zone_id                 = var.cloudflare_zone_id
   chat_function_url       = local.api_worker.chat_function_url
   fit_finder_function_url = local.api_worker.fit_finder_function_url
+  origin_verify_token     = var.origin_verify_token_prod
 }
 
 module "api_worker_dev" {
@@ -42,6 +43,7 @@ module "api_worker_dev" {
   zone_id                 = var.cloudflare_zone_id
   chat_function_url       = local.api_worker_dev.chat_function_url
   fit_finder_function_url = local.api_worker_dev.fit_finder_function_url
+  origin_verify_token     = var.origin_verify_token_dev
   script_name             = "api-proxy-dev"
   route_pattern           = "api-dev.briananderson.xyz/*"
   dns_name                = "api-dev.briananderson.xyz"

@@ -72,6 +72,8 @@ jobs:
           TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_VAR_mcp_gateway_bearer_token: ${{ secrets.MCP_GATEWAY_TOKEN }}
+          TF_VAR_origin_verify_token_prod: ${{ secrets.ORIGIN_VERIFY_TOKEN_PROD }}
+          TF_VAR_origin_verify_token_dev: ${{ secrets.ORIGIN_VERIFY_TOKEN_DEV }}
 
       - name: Comment PR with Plan
         if: github.event_name == 'pull_request'
@@ -114,3 +116,5 @@ jobs:
           TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_VAR_mcp_gateway_bearer_token: ${{ secrets.MCP_GATEWAY_TOKEN }}
+          TF_VAR_origin_verify_token_prod: ${{ secrets.ORIGIN_VERIFY_TOKEN_PROD }}
+          TF_VAR_origin_verify_token_dev: ${{ secrets.ORIGIN_VERIFY_TOKEN_DEV }}
